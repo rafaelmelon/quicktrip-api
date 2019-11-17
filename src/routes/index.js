@@ -1,15 +1,15 @@
 const express = require('express');
 const request = require('request');
 
-import { GooglePlaces } from '../config/index';
+import { googlePlaces } from '../config/index';
 
 import { cacheMiddleware } from '../middleware/index';
 
 let router = express.Router();
 
 router.get('/places/:values', cacheMiddleware(100), (req, res, next) => {
-  const api = GooglePlaces.API;
-  const key = GooglePlaces.KEY;
+  const api = googlePlaces.API;
+  const key = googlePlaces.KEY;
   const lang = 'es';
   const values = req.params.values;
 
