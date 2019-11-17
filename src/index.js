@@ -17,7 +17,9 @@ app.use(
   })
 );
 
-app.get('/places/:values', cors(), cacheMiddleware(100), (req, res) => {
+app.use(cors())
+
+app.get('/places/:values', cacheMiddleware(100), (req, res) => {
   const api = googlePlaces.API;
   const key = googlePlaces.KEY;
   const lang = 'es';
