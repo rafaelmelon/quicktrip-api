@@ -10,14 +10,11 @@ let router = express.Router();
 router.get('/places/:values', cacheMiddleware(100), (req, res, next) => {
   const api = GooglePlaces.API;
   const key = GooglePlaces.KEY;
-  const lang = "es";
+  const lang = 'es';
   const values = req.params.values;
 
   const options = {
-    url: `${api}/place/autocomplete/json?key=${key}&input=${values}&types=(cities)&language=${lang}`,
-    headers: {
-      'User-Agent': 'request'
-    }
+    url: `${api}/place/autocomplete/json?key=${key}&input=${values}&types=(cities)&language=${lang}`
   };
   request(options, (error, response, body) => {
     if (!error && response.statusCode == 200) {
