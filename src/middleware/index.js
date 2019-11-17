@@ -20,18 +20,13 @@ export const cacheMiddleware = duration => {
 };
 
 export const corsMiddleware = (req, res, next) => {
-  // CORS headers
-  res.header('Access-Control-Allow-Origin', 'YOUR_URL'); // restrict it to the required domain
+  res.header("Access-Control-Allow-Origin", "quicktrip-app.herokuapp.com");
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  // Set custom headers for CORS
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Content-type,Accept,X-Custom-Header'
-  );
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  // if (req.method === 'OPTIONS') {
+  //   return res.status(200).end();
+  // }
 
   return next();
 };

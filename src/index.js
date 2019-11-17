@@ -4,6 +4,7 @@ const cors = require('cors');
 
 import { env } from './utils/index';
 import router from './routes/index';
+import { corsMiddleware } from './middleware/index';
 
 const app = express();
 const port = env.PORT || 8080;
@@ -14,6 +15,7 @@ app.use(
     extended: false
   })
 );
+app.use(corsMiddleware);
 app.use(cors());
 app.use('/', router);
 
