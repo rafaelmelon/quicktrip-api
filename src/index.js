@@ -3,8 +3,7 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const cors = require('cors');
 
-import { googlePlaces, corsOptions } from './config/index';
-import { cacheMiddleware } from './middleware/index';
+import { googlePlaces } from './config/index';
 import { env } from './utils/index';
 
 const app = express();
@@ -17,9 +16,9 @@ app.use(
   })
 );
 
-app.use(cors())
+app.use(cors());
 
-app.get('/places/:values', cacheMiddleware(100), (req, res) => {
+app.get('/places/:values', (req, res) => {
   const api = googlePlaces.API;
   const key = googlePlaces.KEY;
   const lang = 'es';
