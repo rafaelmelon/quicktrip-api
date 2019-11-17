@@ -16,29 +16,24 @@ app.use(
     extended: false
   })
 );
-app.use(cors());
-app.options('*', cors());
-app.get(
-  '/places/:values',
-  cacheMiddleware(100),
-  (req, res, next) => {
-    const api = googlePlaces.API;
-    const key = googlePlaces.KEY;
-    const lang = 'es';
-    const values = req.params.values;
 
-    const options = {
-      url: `${api}/place/autocomplete/json?key=${key}&input=${values}&types=(cities)&language=${lang}`
-    };
-    request(options, (error, response, body) => {
-      if (!error && response.statusCode == 200) {
-        const info = JSON.parse(body);
-        res.send(info);
-      } else {
-        res.status(res.statusCode).json(null);
-      }
-    });
-  }
-);
+app.get('/places/:values', cors(), cacheMiddleware(100), (req, res) => {
+  const api = googlePlaces.API;
+  const key = googlePlaces.KEY;
+  const lang = 'es';
+  const values = req.params.values;
+
+  const options = {
+    url: `${api}/place/autocomplete/json?key=${key}&input=${values}&types=(cities)&language=${lang}`
+  };
+  request(options, (error, response, body) => {
+    if (!error && response.statusCode == 200) {
+      const info = JSON.parse(body);
+      res.send(info);
+    } else {
+      res.status(res.statusCode).json(null);
+    }
+  });
+});
 
 app.listen(port, () => console.log(`API listening on port ${port}`));
