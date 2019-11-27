@@ -19,7 +19,12 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', api);
-
+const allowCrossDomain = (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+};
+app.use(allowCrossDomain);
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
 
