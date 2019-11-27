@@ -1,18 +1,17 @@
 {
   "name": "quicktrip-api",
   "version": "0.0.1",
-  "main": "src/index.js",
-  "description": "",
-  "author": "Rafael Melón",
-  "license": "MIT",
-  "private": true,
+  "description": "quicktrip API",
+  "main": "index.js",
   "scripts": {
-    "build": "yarn run clean && mkdir -p dist && babel src -s -D -d dist",
+    "start": "node src/index.js",
+    "dev": "nodemon --inspect src/index.js",
     "clean": "rm -f -r -d dist",
-    "start": "yarn run build && yarn run serve",
-    "serve": "node dist/index.js",
-    "dev": "nodemon --exec babel-node --inspect src/index.js"
+    "lint": "eslint --fix src",
+    "audit": "snyk test",
+    "test": "mocha -w"
   },
+  "author": "Rafael Melón <info@rafaelmelon.com> (https://www.rafaelmelon.com)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rafaelmelon/quicktrip-api.git"
@@ -28,22 +27,21 @@
     "url": "https://github.com/rafaelmelon/quicktrip-api/issues"
   },
   "homepage": "https://github.com/rafaelmelon/quicktrip-api#readme",
-  "engines": {
-    "node": ">=8.9.4",
-    "yarn": "1.x"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/node": "^7.2.2",
-    "@babel/preset-env": "^7.2.3"
-  },
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "cors": "^2.8.5",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
-    "memory-cache": "^0.2.0",
-    "request": "^2.88.0"
+    "helmet": "^3.15.0",
+    "morgan": "^1.9.1",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.12.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.9",
+    "snyk": "^1.185.5",
+    "supertest": "^3.3.0"
   }
 }
