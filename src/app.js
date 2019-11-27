@@ -9,6 +9,7 @@ const api = require('./api');
 
 const app = express();
 
+app.use(middlewares.allowCrossDomain);
 app.use(morgan('dev'));
 app.use(helmet());
 
@@ -19,12 +20,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', api);
-const allowCrossDomain = (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  next();
-};
-app.use(allowCrossDomain);
+
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
 

@@ -26,9 +26,11 @@ router.get('/autocomplete/:values', (req, res) => {
   const url = `${api}/place/autocomplete/json?key=${key}&language=${lang}&input=${values}&types=(cities)`;
 
   fetch(url)
-    .then(response => response.json())
-    .then(data => res.send(data.predictions))
-    .catch(error => console.error(error));
+    .then((response) => response.json())
+    .then((data) => {
+      res.send(data.predictions);
+    })
+    .catch((error) => console.error('CONSOLE ERROR', error));
 });
 
 module.exports = router;
