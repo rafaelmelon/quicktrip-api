@@ -1,6 +1,7 @@
 const app = require('./app');
+const CONFIG = require("./config");
 
-const port = process.env.PORT || 8080;
+const port = CONFIG.PORT;
 app.listen(port, () => {
   /* eslint-disable no-console */
   console.log(`Listening: http://localhost:${port}`);

@@ -3,13 +3,13 @@ const fetch = require("node-fetch");
 const CONFIG = require("../config");
 
 const getAutocomplete = (req, res) => {
-  const { API } = CONFIG;
+  const { lang, google  } = CONFIG.API;
   const { values } = req.params;
 
-  let url = new URL(`${API.google}${API.places.autocomplete}`);
+  let url = new URL(`${google.api}${google.places.autocomplete}`);
   let params = new URLSearchParams(url.search.slice(1));
-  params.append("key", API.places.key);
-  params.append("language", API.lang);
+  params.append("key", google.places.key);
+  params.append("language", lang);
   params.append("input", values);
   params.append("types", "(cities)");
   const mergeUrl = url.toString() + params.toString();
@@ -23,12 +23,12 @@ const getAutocomplete = (req, res) => {
 };
 
 const getPlacesNearBySearch = (req, res) => {
-  const { API } = CONFIG;
+  const { lang, google  } = CONFIG.API;
 
-  let url = new URL(`${API.google}${API.places.nearbysearch}`);
+  let url = new URL(`${google.api}${google.places.nearbysearch}`);
   let params = new URLSearchParams(url.search.slice(1));
-  params.append("key", API.places.key);
-  params.append("language", API.lang);
+  params.append("key", places.key);
+  params.append("language", lang);
   params.append("location", "40.4165,-3.702562");
   params.append("type", "restaurant");
   const mergeUrl = url.toString() + params.toString();
