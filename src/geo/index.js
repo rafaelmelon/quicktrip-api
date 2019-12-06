@@ -3,31 +3,29 @@ const fetch = require("node-fetch");
 const CONFIG = require("../config");
 
 const getAutocomplete = (req, res) => {
-  const { lang, google  } = CONFIG.API;
+  const { lang, mapbox } = CONFIG.API;
   const { values } = req.params;
 
-  let url = new URL(`${google.api}${google.places.autocomplete}`);
+  let url = new URL(`${mapbox.api}${mapbox.geocoding.places}${values}.json?`);
   let params = new URLSearchParams(url.search.slice(1));
-  params.append("key", google.places.key);
+  params.append("access_token", mapbox.geocoding.key);
   params.append("language", lang);
-  params.append("input", values);
-  params.append("types", "(cities)");
+  params.append("types", "place");
+  params.append("autocomplete", "true");
   const mergeUrl = url.toString() + params.toString();
 
   return fetch(mergeUrl)
     .then(response => response.json())
-    .then(data => {
-      res.send(data.predictions);
-    })
+    .then(data => res.send(data.features))
     .catch(error => console.error("CONSOLE ERROR", error));
 };
 
 const getPlacesNearBySearch = (req, res) => {
-  const { lang, google  } = CONFIG.API;
+  const { lang, google } = CONFIG.API;
 
   let url = new URL(`${google.api}${google.places.nearbysearch}`);
   let params = new URLSearchParams(url.search.slice(1));
-  params.append("key", places.key);
+  params.append("key", google.places.key);
   params.append("language", lang);
   params.append("location", "40.4165,-3.702562");
   params.append("type", "restaurant");
@@ -40,13 +38,28 @@ const getPlacesNearBySearch = (req, res) => {
 };
 
 const postSearch = (req, res) => {
-  const { API } = CONFIG;
-  const { description, place_id } = req.body;
+  const { lang, mapbox } = CONFIG.API;
+  const { name, position } = req.body;
 
-  Promise.all([getPlacesNearBySearch()]).then(responses => {
-    const payload = responses[0];
-    res.json(payload);
-  });
+  // Promise.all([getPlacesNearBySearch()]).then(responses => {
+  //   const payload = responses[0];
+  //   res.json(payload);
+  // });
+
+  const search = name || `${position.latitude},${position.longitude}`;
+
+  let url = new URL(`${mapbox.api}${mapbox.geocoding.places}${search}.json?`);
+  let params = new URLSearchParams(url.search.slice(1));
+  params.append("access_token", mapbox.geocoding.key);
+  params.append("types", "address");
+  const mergeUrl = url.toString() + params.toString();
+
+  return fetch(mergeUrl)
+    .then(response => response.json())
+    .then(data => {
+      res.send(data);
+    })
+    .catch(error => console.error("CONSOLE ERROR", error));
 };
 
 const getGeoDirections = input => {

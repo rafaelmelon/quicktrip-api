@@ -3,8 +3,8 @@ const { PORT, KEY_GOOGLE_PLACES, KEY_MAPBOX } = process.env;
 const CONFIG = {
   PORT: PORT || 8080,
   API: {
+    lang: "es",
     google: {
-      lang: "es",
       api: "https://maps.googleapis.com/maps/api/",
       places: {
         key: KEY_GOOGLE_PLACES,
@@ -14,7 +14,6 @@ const CONFIG = {
       }
     },
     mapbox: {
-      lang: "es",
       api: "https://api.mapbox.com/",
       geocoding: {
         key: KEY_MAPBOX,
