@@ -10,7 +10,8 @@ const CONFIG = {
         key: KEY_GOOGLE_PLACES,
         autocomplete: "place/autocomplete/json?",
         findplacefromtext: "place/findplacefromtext/json?",
-        nearbysearch: "place/nearbysearch/json?"
+        nearbysearch: "place/nearbysearch/json?",
+        photo: "place/photo?"
       }
     },
     mapbox: {

@@ -20,20 +20,47 @@ const getAutocomplete = (req, res) => {
     .catch(error => console.error("CONSOLE ERROR", error));
 };
 
-const getPlacesNearBySearch = (req, res) => {
+const getPlacesPhoto = photoreference => {
+  const { lang, google } = CONFIG.API;
+
+  let url = new URL(`${google.api}${google.places.photo}`);
+  let params = new URLSearchParams(url.search.slice(1));
+  params.append("key", google.places.key);
+  params.append("maxwidth", "300");
+  params.append("photoreference", photoreference);
+
+  const mergeUrl = url.toString() + params.toString();
+
+  return mergeUrl;
+};
+
+const parsePlaces = data =>
+  data.results.map(result => ({
+    photos: result.photos.map(photo => ({
+      height: photo.height,
+      link: getPlacesPhoto(photo.photo_reference)
+    })),
+    name: result.name,
+    id: result.id,
+    geometry: result.geometry
+  }));
+
+const getPlacesNearBySearch = (req, res, position) => {
   const { lang, google } = CONFIG.API;
 
   let url = new URL(`${google.api}${google.places.nearbysearch}`);
   let params = new URLSearchParams(url.search.slice(1));
   params.append("key", google.places.key);
   params.append("language", lang);
-  params.append("location", "40.4165,-3.702562");
-  params.append("type", "restaurant");
+  params.append("radius", "20000");
+  params.append("location", `${position.latitude}, ${position.longitude}`);
+  params.append("type", "tourist_attraction,museum,point_of_interest");
+
   const mergeUrl = url.toString() + params.toString();
 
   return fetch(mergeUrl)
     .then(response => response.json())
-    .then(data => data)
+    .then(data => res.send(parsePlaces(data)))
     .catch(error => console.error("CONSOLE ERROR", error));
 };
 
@@ -46,20 +73,22 @@ const postSearch = (req, res) => {
   //   res.json(payload);
   // });
 
-  const search = name || `${position.latitude},${position.longitude}`;
+  // const search = name || `${position.latitude},${position.longitude}`;
 
-  let url = new URL(`${mapbox.api}${mapbox.geocoding.places}${search}.json?`);
-  let params = new URLSearchParams(url.search.slice(1));
-  params.append("access_token", mapbox.geocoding.key);
-  params.append("types", "address");
-  const mergeUrl = url.toString() + params.toString();
+  // let url = new URL(`${mapbox.api}${mapbox.geocoding.places}${search}.json?`);
+  // let params = new URLSearchParams(url.search.slice(1));
+  // params.append("access_token", mapbox.geocoding.key);
+  // params.append("types", "address");
+  // const mergeUrl = url.toString() + params.toString();
 
-  return fetch(mergeUrl)
-    .then(response => response.json())
-    .then(data => {
-      res.send(data);
-    })
-    .catch(error => console.error("CONSOLE ERROR", error));
+  // return fetch(mergeUrl)
+  //   .then(response => response.json())
+  //   .then(data => {
+  //     res.send(data);
+  //   })
+  //   .catch(error => console.error("CONSOLE ERROR", error));
+
+  return getPlacesNearBySearch(req, res, position);
 };
 
 const getGeoDirections = input => {
