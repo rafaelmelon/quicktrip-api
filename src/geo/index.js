@@ -73,7 +73,13 @@ const getPlaces = (req, res, place) => {
   const { lang, mapbox } = CONFIG.API;
   const { name, position } = place;
 
-  let url = new URL(`${mapbox.api}${mapbox.geocoding.places}${name}.json?`);
+  const customSearch = name
+    ? name
+    : `${position.longitude},${position.latitude}`;
+
+  let url = new URL(
+    `${mapbox.api}${mapbox.geocoding.places}${customSearch}.json?`
+  );
   let params = new URLSearchParams(url.search.slice(1));
   params.append("access_token", mapbox.geocoding.key);
   params.append("language", lang);
