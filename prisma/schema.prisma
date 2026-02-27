@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  routes Route[]
+  places Place[]
+  notes  Note[]
+
+  @@map("users")
+}
+
+model Route {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  name            String
+  category        String
+  estimatedMinutes Int     @map("estimated_minutes")
+  originName      String   @map("origin_name")
+  originLat       Float    @map("origin_lat")
+  originLng       Float    @map("origin_lng")
+  destinationName String   @map("destination_name")
+  destinationLat  Float    @map("destination_lat")
+  destinationLng  Float    @map("destination_lng")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stops RouteStop[]
+  notes Note[]
+
+  @@index([userId])
+  @@map("routes")
+}
+
+model RouteStop {
+  id       String @id @default(uuid())
+  routeId  String @map("route_id")
+  name     String
+  address  String
+  lat      Float
+  lng      Float
+  photoUrl String? @map("photo_url")
+  position Int
+
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+
+  @@index([routeId])
+  @@map("route_stops")
+}
+
+model Place {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  address   String
+  lat       Float
+  lng       Float
+  photoUrl  String?  @map("photo_url")
+  category  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("places")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  routeId   String   @map("route_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([routeId])
+  @@index([userId])
+  @@map("notes")
+}
