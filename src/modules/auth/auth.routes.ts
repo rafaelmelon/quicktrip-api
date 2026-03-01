@@ -7,4 +7,9 @@ export async function authRoutes(app: FastifyInstance) {
   app.post("/auth/login", ctrl.loginHandler);
   app.post("/auth/refresh", ctrl.refreshHandler);
   app.get("/auth/me", { preHandler: [authenticate] }, ctrl.meHandler);
+  app.patch(
+    "/auth/onboarding",
+    { preHandler: [authenticate] },
+    ctrl.onboardingHandler
+  );
 }

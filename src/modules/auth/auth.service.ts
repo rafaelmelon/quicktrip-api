@@ -1,7 +1,11 @@
 import { prisma } from "../../config/database.js";
 import { hashPassword, verifyPassword } from "../../utils/password.js";
-import { signAccessToken, signRefreshToken, verifyToken } from "../../utils/jwt.js";
-import type { SignupInput, LoginInput } from "./auth.schema.js";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyToken,
+} from "../../utils/jwt.js";
+import type { SignupInput, LoginInput, OnboardingInput } from "./auth.schema.js";
 
 function tokenPair(userId: string, username: string) {
   const payload = { sub: userId, username };
@@ -11,8 +15,22 @@ function tokenPair(userId: string, username: string) {
   };
 }
 
-function safeUser(user: { id: string; email: string; username: string }) {
-  return { id: user.id, email: user.email, username: user.username };
+function safeUser(user: {
+  id: string;
+  email: string;
+  username: string;
+  onboardingCompleted: boolean;
+  transportMode: string;
+  interests: string[];
+}) {
+  return {
+    id: user.id,
+    email: user.email,
+    username: user.username,
+    onboardingCompleted: user.onboardingCompleted,
+    transportMode: user.transportMode,
+    interests: user.interests,
+  };
 }
 
 export async function signup(input: SignupInput) {
@@ -36,7 +54,9 @@ export async function signup(input: SignupInput) {
 }
 
 export async function login(input: LoginInput) {
-  const user = await prisma.user.findUnique({ where: { email: input.email } });
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+  });
 
   if (!user || !(await verifyPassword(input.password, user.passwordHash))) {
     const error = new Error("Invalid email or password");
@@ -50,7 +70,9 @@ export async function login(input: LoginInput) {
 export async function refresh(refreshToken: string) {
   const payload = verifyToken(refreshToken);
 
-  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+  });
   if (!user) {
     const error = new Error("User no longer exists");
     (error as any).statusCode = 401;
@@ -67,5 +89,20 @@ export async function me(userId: string) {
     (error as any).statusCode = 404;
     throw error;
   }
+  return safeUser(user);
+}
+
+export async function completeOnboarding(
+  userId: string,
+  input: OnboardingInput
+) {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      transportMode: input.transportMode,
+      interests: input.interests,
+      onboardingCompleted: true,
+    },
+  });
   return safeUser(user);
 }

@@ -7,13 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TransportMode {
+  walking
+  transit
+  taxi
+}
+
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  username     String   @unique
-  passwordHash String   @map("password_hash")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id                  String        @id @default(uuid())
+  email               String        @unique
+  username            String        @unique
+  passwordHash        String        @map("password_hash")
+  onboardingCompleted Boolean       @default(false) @map("onboarding_completed")
+  transportMode       TransportMode @default(walking) @map("transport_mode")
+  interests           String[]      @default([])
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
 
   routes Route[]
   places Place[]
@@ -23,19 +32,22 @@ model User {
 }
 
 model Route {
-  id              String   @id @default(uuid())
-  userId          String   @map("user_id")
+  id              String        @id @default(uuid())
+  userId          String        @map("user_id")
   name            String
   category        String
-  estimatedMinutes Int     @map("estimated_minutes")
-  originName      String   @map("origin_name")
-  originLat       Float    @map("origin_lat")
-  originLng       Float    @map("origin_lng")
-  destinationName String   @map("destination_name")
-  destinationLat  Float    @map("destination_lat")
-  destinationLng  Float    @map("destination_lng")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  transportMode   TransportMode @default(walking) @map("transport_mode")
+  estimatedMinutes Int          @map("estimated_minutes")
+  departureTime   String        @map("departure_time")
+  arrivalTime     String        @map("arrival_time")
+  originName      String        @map("origin_name")
+  originLat       Float         @map("origin_lat")
+  originLng       Float         @map("origin_lng")
+  destinationName String        @map("destination_name")
+  destinationLat  Float         @map("destination_lat")
+  destinationLng  Float         @map("destination_lng")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
 
   user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   stops RouteStop[]
@@ -46,14 +58,18 @@ model Route {
 }
 
 model RouteStop {
-  id       String @id @default(uuid())
-  routeId  String @map("route_id")
-  name     String
-  address  String
-  lat      Float
-  lng      Float
-  photoUrl String? @map("photo_url")
-  position Int
+  id          String  @id @default(uuid())
+  routeId     String  @map("route_id")
+  name        String
+  address     String
+  lat         Float
+  lng         Float
+  photoUrl    String? @map("photo_url")
+  position    Int
+  category    String?
+  rating      Float?
+  description String?
+  placeId     String? @map("place_id")
 
   route Route @relation(fields: [routeId], references: [id], onDelete: Cascade)
 

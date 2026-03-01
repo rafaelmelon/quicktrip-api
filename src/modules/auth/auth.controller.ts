@@ -1,5 +1,10 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { signupSchema, loginSchema, refreshSchema } from "./auth.schema.js";
+import {
+  signupSchema,
+  loginSchema,
+  refreshSchema,
+  onboardingSchema,
+} from "./auth.schema.js";
 import * as authService from "./auth.service.js";
 
 export async function signupHandler(
@@ -31,5 +36,14 @@ export async function refreshHandler(
 
 export async function meHandler(request: FastifyRequest, reply: FastifyReply) {
   const result = await authService.me(request.user.sub);
+  return reply.send(result);
+}
+
+export async function onboardingHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const body = onboardingSchema.parse(request.body);
+  const result = await authService.completeOnboarding(request.user.sub, body);
   return reply.send(result);
 }
